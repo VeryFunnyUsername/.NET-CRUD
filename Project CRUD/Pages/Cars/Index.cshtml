@@ -1,0 +1,98 @@
+﻿@page
+@model Project_CRUD.Pages.Cars.IndexModel
+
+@{
+    ViewData["Title"] = "Index of Cars";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-page="Create">Create New</a>
+</p>
+
+<input type="text" id="filterInput" placeholder="Filter">
+
+<table class="table">
+    <thead>
+        <tr>
+            <th data-sort="0" style="cursor:pointer" class="text-primary">
+                @Html.DisplayNameFor(model => model.Car[0].Brand)            
+            </div>
+            <th data-sort="1" style="cursor:pointer" class="text-primary">
+                @Html.DisplayNameFor(model => model.Car[0].Model)
+            </th>
+            <th data-sort="2" style="cursor:pointer" class="text-primary">
+                @Html.DisplayNameFor(model => model.Car[0].ManufactureDate)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model.Car) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Brand)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Model)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ManufactureDate)
+            </td>
+            <td>
+                <a asp-page="./Edit" asp-route-id="@item.Id">Edit</a> |
+                <a asp-page="./Details" asp-route-id="@item.Id">Details</a> |
+                <a asp-page="./Delete" asp-route-id="@item.Id">Delete</a>
+            </td>
+        </tr>
+}
+    @section Scripts {
+      <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+      <script>
+        $(document).ready(function () {
+          var sortOrder = 1;
+
+          $('th[data-sort]').on('click', function () {
+            var column = $(this).data('sort');
+            sortOrder *= -1;
+            sortTable(column, sortOrder);
+          });
+
+          $('#filterInput').on('input', function () {
+            filterTable($(this).val());
+          });
+
+          function sortTable(column, sortOrder) {
+            var table = $('table');
+            var rows = $('tbody > tr', table).get();
+
+            rows.sort(function (a, b) {
+              var keyA = $(a).children('td').eq(column).text().toUpperCase();
+              var keyB = $(b).children('td').eq(column).text().toUpperCase();
+
+              if (keyA < keyB) return -1 * sortOrder;
+              if (keyA > keyB) return 1 * sortOrder;
+              return 0;
+            });
+
+            $.each(rows, function (index, row) {
+              table.children('tbody').append(row);
+            });
+
+            filterTable($('#filterInput').val());
+          }
+
+          function filterTable(filterText) {
+            var table = $('table');
+            var rows = $('tbody > tr', table);
+
+            rows.hide().filter(function () {
+              return $(this).text().toLowerCase().indexOf(filterText.toLowerCase()) !== -1;
+            }).show();
+          }
+        });
+      </script>
+    }
+    </tbody>
+</table>
